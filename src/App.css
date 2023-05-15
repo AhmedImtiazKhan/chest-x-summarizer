@@ -1,0 +1,9 @@
+.App {
+  height: 100%;
+}
+
+body {
+  background-image: url("./background.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+}

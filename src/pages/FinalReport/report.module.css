@@ -1,0 +1,11 @@
+.mainHeading {
+    color: #183780;
+    font-size: 60px;
+    font-weight: bold;
+    margin-bottom: 50px;
+}
+.text {
+    font-size: 24px;
+    margin-block: 20px;
+    line-height: 27px;
+}
