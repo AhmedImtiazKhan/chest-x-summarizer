@@ -1,11 +1,16 @@
 import React, { useState, useRef } from "react";
 import { Button } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
+// import Button from "react-bootstrap";
+// import Image from "react-bootstrap/Image";
+import axios from "axios";
+import { useSelector } from "react-redux";
 
 function SummaryPage() {
   const [imageUrl, setImageUrl] = useState("UploadImage.png");
   const fileInputRef = useRef(null);
-
+  const uploadedImage = useSelector((state) => state.image.image);
+  console.log(uploadedImage);
   // const sendReq = async () => {
   //   const apiName = "fypREST";
   //   const path = "/upload";
@@ -25,14 +30,52 @@ function SummaryPage() {
   //     });
   // };
 
+  const handleProcessClick = async () => {
+    const files = fileInputRef.current.files;
+    if (files && files.length > 0) {
+      const fileDataArray = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+
+        reader.onload = (event) => {
+          const fileContent = event.target.result;
+          fileDataArray.push({ filename: file.name, content: fileContent });
+          console.log(fileDataArray);
+          // check if all files have been processed
+          if (fileDataArray.length === files.length) {
+            axios({
+              method: "post",
+              url: "http://127.0.0.1:5000/",
+              data: fileDataArray,
+            })
+              .then((res) => {
+                console.log(res);
+              })
+              .catch((err) => {
+                // alert(err.response.data.error);
+                console.log(err);
+              });
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    } else {
+      // handle error when no files are uploaded
+      console.log("No files selected");
+    }
+
+    // window.location.href = "/summary";
+  };
+
   const handleUploadClick = () => {
     fileInputRef.current.click();
   };
 
-  const handleProcessClick = async () => {
-    // await sendReq();
-    window.location.href = "/summary";
-  };
+  // const handleProcessClick = async () => {
+  //   // await sendReq()
+  //   window.location.href = "/summary";
+  // };
 
   const handleFileInputChange = (e) => {
     const file = e.target.files[0];
@@ -52,12 +95,12 @@ function SummaryPage() {
     >
       <div>
         <div className="mb-5">
-          <Image
-            src={imageUrl}
-            alt="Upload image"
-            fluid
-            style={{ width: "659px", height: "659px", borderRadius: "25px" }}
-          />
+          {uploadedImage && (
+            <img
+              src={URL.createObjectURL(uploadedImage)}
+              alt="Uploaded image"
+            />
+          )}
         </div>
         <div
           className="d-flex mb-4"
@@ -69,11 +112,11 @@ function SummaryPage() {
         >
           <Button
             variant="primary"
-            className="p-3 px-5 rounded-pill mr-2"
-            style={{ fontSize: "24px", width: "307px", height: "87px" }}
+            className="p-2 px-5 rounded-pill mr-2"
+            style={{ width: "307px", height: "87px", fontSize: "24px" }}
             onClick={handleUploadClick}
           >
-            <b>New Image</b>
+            Upload Image
           </Button>
           <input
             type="file"
@@ -82,23 +125,23 @@ function SummaryPage() {
             onChange={handleFileInputChange}
           />
           <Button
+            onClick={() => handleProcessClick(imageUrl)}
             variant="secondary"
             className="p-2 px-5 rounded-pill ml-2"
             style={{
               backgroundColor: "transparent",
               color: "grey",
+              width: "294px",
+              height: "94px",
               fontSize: "24px",
-              width: "307px",
-              height: "87px",
             }}
-            onClick={handleProcessClick}
           >
-            <b>Process</b>
+            Process
           </Button>
         </div>
       </div>
       <div style={{ minWidth: "800px" }}>
-        <h1 style={{ fontSize: "60px", color: "#183780" }}>Summary</h1>
+        <h1 style={{ fontSize: "60px", color: "#183780" }}>Classification:</h1>
         <div
           style={{
             maxWidth: "800px",
@@ -107,11 +150,11 @@ function SummaryPage() {
             fontSize: "24px",
           }}
         >
-          <p>
+          {/* <p>
             <b>Conclusion: </b>The non-contrast CT scan of the chest reveals
             mild to moderate bilateral bronchitis and/or atypical pneumonia.
             Clinical correlation is recommended for further management.
-          </p>
+          </p> */}
         </div>
         <div
           style={{
@@ -137,28 +180,28 @@ function SummaryPage() {
 step1"
                 style={{ marginLeft: "10px" }}
               >
-                Consolidation
+                No Finding
               </label>
               <br />
             </div>
             <div style={{ marginBottom: "10px" }}>
               <input type="checkbox" id="step3" name="step3" value="step3" />
               <label htmlFor="step3" style={{ marginLeft: "10px" }}>
-                Fracture
+                Enlarged Cardiomediastinum{" "}
               </label>
               <br />
             </div>
             <div style={{ marginBottom: "10px" }}>
               <input type="checkbox" id="step1" name="step1" value="step1" />
               <label style={{ marginLeft: "10px" }} htmlFor="step1">
-                Pneumothorax
+                Cardiomegaly
               </label>
               <br />
             </div>
             <div style={{ marginBottom: "10px" }}>
               <input type="checkbox" id="step3" name="step3" value="step3" />
               <label style={{ marginLeft: "10px" }} htmlFor="step3">
-           Pneumonia
+                Lung Opacity
               </label>
               <br />
             </div>
@@ -169,7 +212,7 @@ step1"
                 htmlFor="step1"
                 className="ml-2"
               >
-                Plueral Effusion
+                Lung Lesion{" "}
               </label>
               <br />
             </div>
@@ -180,7 +223,7 @@ step1"
                 htmlFor="step3"
                 className="ml-2"
               >
-                Plueral Other
+                Edema{" "}
               </label>
               <br />
             </div>
@@ -191,7 +234,7 @@ step1"
                 htmlFor="step1"
                 className="ml-2"
               >
-                Cardiomegaly
+                Consolidation
               </label>
               <br />
             </div>
@@ -203,28 +246,28 @@ step1"
             <div style={{ marginBottom: "10px" }}>
               <input type="checkbox" id="step2" name="step2" value="step2" />
               <label htmlFor="step2" style={{ marginLeft: "10px" }}>
-              Atelectasis
+                Pneumonia
               </label>
               <br />
             </div>
             <div style={{ marginBottom: "10px" }}>
               <input type="checkbox" id="step4" name="step4" value="step4" />
               <label htmlFor="step4" style={{ marginLeft: "10px" }}>
-             Lung Opacity
+                Atelectasis
               </label>
               <br />
             </div>
             <div style={{ marginBottom: "10px" }}>
               <input type="checkbox" id="step2" name="step2" value="step2" />
               <label style={{ marginLeft: "10px" }} htmlFor="step2">
-                Lung Lesion
+                Pneumothorax
               </label>
               <br />
             </div>
             <div style={{ marginBottom: "10px" }}>
               <input type="checkbox" id="step4" name="step4" value="step4" />
               <label style={{ marginLeft: "10px" }} htmlFor="step4">
-       Enlarged Cardiomestanium
+                Pleural Effusion
               </label>
               <br />
             </div>
@@ -235,14 +278,14 @@ step1"
                 htmlFor="step2"
                 className="ml-2"
               >
-                Edema
+                Pleural Other
               </label>
               <br />
             </div>
             <div style={{ marginBottom: "10px" }}>
               <input type="checkbox" id="step4" name="step4" value="step4" />
               <label style={{ marginLeft: "10px" }} htmlFor="step4">
-                X
+                Fracture
               </label>
               <br />
             </div>
@@ -253,7 +296,7 @@ step1"
                 htmlFor="step2"
                 className="ml-2"
               >
-                Y
+                Support Devices
               </label>
               <br />
             </div>

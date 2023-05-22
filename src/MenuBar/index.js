@@ -13,9 +13,16 @@ function MenuBar() {
       className="p-5"
     >
       <Container>
- <Navbar bg="light" expand="lg">
-<Navbar.Brand href="#" style={{ fontSize: '2rem', fontWeight: 'bold' }}>ChestX Summarizer</Navbar.Brand>
-    </Navbar>        {/* <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar bg="light" expand="lg">
+          <Navbar.Brand
+            href="#"
+            style={{ fontSize: "2rem", fontWeight: "bold", marginLeft: 0 }}
+          >
+            ChestX Summarizer
+          </Navbar.Brand>
+        </Navbar>
+        {/* 
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link href="#features">Features</Nav.Link>
@@ -38,7 +45,8 @@ function MenuBar() {
               
             </Nav.Link>
           </Nav>
-        </Navbar.Collapse> */}
+        </Navbar.Collapse> 
+        */}
       </Container>
     </Navbar>
   );
