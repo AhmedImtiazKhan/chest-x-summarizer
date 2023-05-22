@@ -18,7 +18,7 @@ export function processFiles(files) {
           if (fileDataArray.length === files.length) {
             axios({
               method: "post",
-              url: "http://127.0.0.1:5000/",
+              url: "https://chestx.localto.net",
               data: fileDataArray,
             })
               .then((res) => {
