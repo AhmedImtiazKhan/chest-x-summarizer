@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import MenuBar from "./MenuBar";
 import Body from "./Body";
 import UploadPage from "./pages/Upload Image/UploadPage";
