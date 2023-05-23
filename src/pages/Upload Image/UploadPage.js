@@ -4,6 +4,7 @@ import Image from "react-bootstrap/Image";
 import { processFiles } from "../../helpers/Api";
 import { useDispatch } from "react-redux";
 import { setImage } from "../../store/slices/imageState";
+import MenuBar from "../../MenuBar/index";
 
 function UploadPage() {
   const [imageUrl, setImageUrl] = useState("UploadImage.png");
@@ -69,17 +70,17 @@ function UploadPage() {
       const percentage = (probability * 100).toFixed(2);
       const percentageStyle = {
         fontWeight: "bold",
-        fontSize: "24px",
+        fontSize: "16px",
         color:
           probability >= 0.6 ? "red" : probability >= 0.4 ? "orange" : "black",
-        marginLeft: "5px",
       };
       const listItemStyle = {
         margin: "10px 0",
         fontWeight: "bold",
-        fontSize: "24px",
+        fontSize: "16px",
         display: "flex",
         alignItems: "center",
+        justifyContent: "center",
       };
 
       return (
@@ -94,85 +95,91 @@ function UploadPage() {
   return (
     <Container
       className="d-flex flex-column justify-content-center align-items-center"
-      style={{ height: "100%" }}
+      style={{ height: "100%", width: "100%" }}
     >
+      {" "}
+      <MenuBar />
+      <Image
+        src={imageUrl}
+        alt="Uploaded image preview"
+        fluid
+        className="mb-3"
+        style={{
+          aspectRatio: 1,
+          width: "100%",
+          maxWidth: "440px",
+          borderRadius: "67px",
+        }}
+      />
       <Row>
-        <Col>
-          <Image
-            src={imageUrl}
-            alt="Uploaded image preview"
-            fluid
-            className="mb-3"
-            style={{ width: "659px", height: "659px", borderRadius: "67px" }}
-          />
-          <div
+        <Col md={6} className="d-flex justify-content-center">
+          <Button
+            variant="primary"
+            className="p-2 px-5 rounded-pill mr-2"
             style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              width: "659px",
+              maxWidth: "206px",
+              width: "100%",
+              height: "59px",
+              fontSize: "16px",
+            }}
+            onClick={handleUploadClick}
+          >
+            Upload Image
+          </Button>
+        </Col>
+        <Col md={6} className="d-flex justify-content-center">
+          <Button
+            onClick={() => handleFileUpload(imageUrl)}
+            variant="secondary"
+            className="p-2 px-5 rounded-pill ml-2"
+            style={{
+              backgroundColor: "transparent",
+              color: "grey",
+              width: "198px",
+              height: "63px",
+              fontSize: "16px",
+            }}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Spinner animation="border" size="sm" className="mr-2" />
+                Loading...
+              </>
+            ) : (
+              "Process"
+            )}
+          </Button>
+        </Col>
+      </Row>
+      <input
+        type="file"
+        style={{ display: "none" }}
+        ref={fileInputRef}
+        onChange={handleFileInputChange}
+      />
+      {probabilities.length > 0 && (
+        <Container>
+          <h1
+            style={{ fontSize: "40px", color: "#183780", textAlign: "center" }}
+          >
+            Classification:
+          </h1>
+
+          <ul
+            className="list-unstyled"
+            style={{
+              display: "inline",
+              fontSize: "16px",
+              marginTop: "20px",
+              marginLeft: "auto",
+              marginRight: "auto",
             }}
           >
-            <Button
-              variant="primary"
-              className="p-2 px-5 rounded-pill mr-2"
-              style={{ width: "307px", height: "87px", fontSize: "24px" }}
-              onClick={handleUploadClick}
-            >
-              Upload Image
-            </Button>
-
-            <input
-              type="file"
-              style={{ display: "none" }}
-              ref={fileInputRef}
-              onChange={handleFileInputChange}
-            />
-            <Button
-              onClick={() => handleFileUpload(imageUrl)}
-              variant="secondary"
-              className="p-2 px-5 rounded-pill ml-2"
-              style={{
-                backgroundColor: "transparent",
-                color: "grey",
-                width: "294px",
-                height: "94px",
-                fontSize: "24px",
-              }}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <Spinner animation="border" size="sm" className="mr-2" />
-                  Loading...
-                </>
-              ) : (
-                "Process"
-              )}
-            </Button>
-          </div>
-        </Col>
-        {probabilities.length > 0 && (
-          <Col>
-            <Container>
-              <h1 style={{ fontSize: "60px", color: "#183780" }}>
-                Classification:
-              </h1>
-
-              <ul
-                className="list-unstyled"
-                style={{
-                  fontSize: "24px",
-                  marginTop: "20px",
-                  marginLeft: "20px",
-                }}
-              >
-                {mapProbabilitiesToLabels()}
-              </ul>
-            </Container>
-          </Col>
-        )}
-      </Row>
+            {mapProbabilitiesToLabels()}
+          </ul>
+        </Container>
+      )}
     </Container>
   );
 }

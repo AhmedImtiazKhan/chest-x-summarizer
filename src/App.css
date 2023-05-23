@@ -7,3 +7,9 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
 }
+
+body,
+html,
+#root {
+  width: 100% !important;
+}
