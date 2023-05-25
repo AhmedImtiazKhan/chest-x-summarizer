@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { Container, Button, Row, Col, Spinner } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
 import { processFiles } from "../../helpers/Api";
+import { generateReport } from "../../helpers/Api";
 import { useDispatch } from "react-redux";
 import { setImage } from "../../store/slices/imageState";
 import MenuBar from "../../MenuBar/index";
@@ -9,23 +10,39 @@ import MenuBar from "../../MenuBar/index";
 function UploadPage() {
   const [imageUrl, setImageUrl] = useState("UploadImage.png");
   const [probabilities, setProbabilities] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [report, setReport] = useState([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
   const dispatch = useDispatch();
   const fileInputRef = useRef(null);
 
   const handleFileUpload = async (e) => {
     const files = fileInputRef.current.files;
     dispatch(setImage(files));
-    setIsLoading(true);
+    setIsProcessing(true);
     try {
       const probabilities = await processFiles(files);
       setProbabilities(probabilities);
       console.log(probabilities);
-      // window.location.href = "/summary";
     } catch (error) {
       console.log("Error:", error);
     } finally {
-      setIsLoading(false);
+      setIsProcessing(false);
+    }
+  };
+
+  const handleGenerateReport = async (e) => {
+    const files = fileInputRef.current.files;
+    dispatch(setImage(files));
+    setIsGeneratingReport(true);
+    try {
+      const report = await generateReport(files);
+      setReport(report);
+      // console.log(report);
+    } catch (error) {
+      console.log("Error:", error);
+    } finally {
+      setIsGeneratingReport(false);
     }
   };
 
@@ -64,20 +81,19 @@ function UploadPage() {
         const probabilityB = probabilities[labels.indexOf(b)];
         return probabilityB - probabilityA;
       });
-
     return sortedLabels.map((label, index) => {
       const probability = probabilities[labels.indexOf(label)];
       const percentage = (probability * 100).toFixed(2);
       const percentageStyle = {
         fontWeight: "bold",
-        fontSize: "16px",
+        fontSize: "1rem",
         color:
           probability >= 0.6 ? "red" : probability >= 0.4 ? "orange" : "black",
       };
       const listItemStyle = {
-        margin: "10px 0",
+        margin: "1rem 0",
         fontWeight: "bold",
-        fontSize: "16px",
+        fontSize: "1rem",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -85,7 +101,7 @@ function UploadPage() {
 
       return (
         <li key={index} style={listItemStyle}>
-          <span style={{ color: "black", marginRight: "10px" }}>{label}:</span>
+          <span style={{ color: "black", marginRight: "0.625rem" }}>{label}:</span>
           <span style={percentageStyle}>{percentage}%</span>
         </li>
       );
@@ -97,7 +113,6 @@ function UploadPage() {
       className="d-flex flex-column justify-content-center align-items-center"
       style={{ height: "100%", width: "100%" }}
     >
-      {" "}
       <MenuBar />
       <Image
         src={imageUrl}
@@ -107,8 +122,8 @@ function UploadPage() {
         style={{
           aspectRatio: 1,
           width: "100%",
-          maxWidth: "440px",
-          borderRadius: "67px",
+          maxWidth: "27.5rem",
+          borderRadius: "4.1875rem",
         }}
       />
       <Row>
@@ -117,10 +132,12 @@ function UploadPage() {
             variant="primary"
             className="p-2 px-5 rounded-pill mr-2"
             style={{
-              maxWidth: "206px",
+              maxWidth: "15.625rem",
               width: "100%",
-              height: "59px",
-              fontSize: "16px",
+              height: "4.4375rem",
+              fontSize: "1rem",
+              marginTop: "0.5rem",
+              marginBottom: "0.5rem",
             }}
             onClick={handleUploadClick}
           >
@@ -129,19 +146,22 @@ function UploadPage() {
         </Col>
         <Col md={6} className="d-flex justify-content-center">
           <Button
-            onClick={() => handleFileUpload(imageUrl)}
-            variant="secondary"
+            onClick={handleFileUpload}
+            variant="primary"
             className="p-2 px-5 rounded-pill ml-2"
             style={{
-              backgroundColor: "transparent",
-              color: "grey",
-              width: "198px",
-              height: "63px",
-              fontSize: "16px",
+              // backgroundColor: "grey",
+              color: "white",
+              maxWidth: "15.625rem",
+              width: "15.625rem",
+              height: "4.4375rem",
+              fontSize: "1rem",
+              marginTop: "0.5rem",
+              marginBottom: "0.5rem",
             }}
-            disabled={isLoading}
+            disabled={isProcessing}
           >
-            {isLoading ? (
+            {isProcessing ? (
               <>
                 <Spinner animation="border" size="sm" className="mr-2" />
                 Loading...
@@ -152,6 +172,7 @@ function UploadPage() {
           </Button>
         </Col>
       </Row>
+
       <input
         type="file"
         style={{ display: "none" }}
@@ -160,24 +181,72 @@ function UploadPage() {
       />
       {probabilities.length > 0 && (
         <Container>
-          <h1
-            style={{ fontSize: "40px", color: "#183780", textAlign: "center" }}
+          <h3
+            style={{ fontSize: "2.5rem", color: "#183780", textAlign: "center" }}
           >
             Classification:
-          </h1>
-
+          </h3>
           <ul
             className="list-unstyled"
             style={{
               display: "inline",
-              fontSize: "16px",
-              marginTop: "20px",
+              fontSize: "1rem",
+              marginTop: "1.25rem",
               marginLeft: "auto",
               marginRight: "auto",
             }}
           >
             {mapProbabilitiesToLabels()}
           </ul>
+          <Button
+            variant="primary"
+            className="p-2 px-5 rounded-pill mr-2"
+            style={{
+              maxWidth: "15.625rem",
+              width: "100%",
+              height: "4.4375rem",
+              fontSize: "1rem",
+              display: "block",
+              margin: "auto",
+              marginTop: "1rem",
+              marginBottom: "0.5rem",
+              padding: "auto",
+            }}
+            onClick={handleGenerateReport}
+            disabled={isGeneratingReport}
+          >
+            {isGeneratingReport ? (
+              <>
+                <Spinner animation="border" size="sm" className="mr-2" />
+                Loading...
+              </>
+            ) : (
+              "Generate Report"
+            )}
+          </Button>
+
+          {report.length > 0 && (
+            <h3
+              style={{
+                fontSize: "2.5rem",
+                color: "#183780",
+                textAlign: "center",
+                // marginTop: "2rem",
+              }}
+            >
+              Report:
+            </h3>
+          )}
+          <p
+            style={{
+              display: "flex",
+              fontSize: "1rem",
+              justifyContent: "center",
+              textAlign: "center",
+            }}
+          >
+            {report}
+          </p>
         </Container>
       )}
     </Container>

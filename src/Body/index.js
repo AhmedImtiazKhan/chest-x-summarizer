@@ -5,12 +5,12 @@ import "./Body.css";
 
 function Body() {
   return (
-    <Container className="p-3 h-80vh position-relative">
+    <Container className="p-3 h-10vh position-relative">
       <Row className="h-100">
         <Col
           sm={12}
           md={5}
-          className="h-md-90 d-flex flex-column justify-content-center align-items-center text-center mb-3 mb-md-0"
+          className="h-md-90 d-flex flex-column justify-content-center align-items-center text-center mb-3 mb-md-0 mt-100"
         >
           <h1 className="heading-small">Diagnose Your Chest X-Rays</h1>
           <p className="text-small">
